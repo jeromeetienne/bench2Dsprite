@@ -1,0 +1,72 @@
+<body>
+	<script src="vendor/requestanimationframe.js"></script>
+	<script src="vendor/Stats.js"></script>
+	<script src="../vendor/gowiththeflow.js"></script>
+
+	<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../vendor/excanvas.min.js"></script><![endif]-->
+	<script src="../vendor/jquery.js"></script>
+	<script src="../vendor/jquery.flot.js"></script>
+	<script src="benchdiv.js"></script>
+	<script src="benchcanvas.js"></script>
+	<script>
+		var params	= [
+			{ nImages	: 1000,
+			  nSeconds	: 5,
+			  benchFn	: benchDiv
+			},
+			{ nImages	: 1000,
+			  nSeconds	: 5,
+			  benchFn	: benchDiv
+			},
+			{ nImages	: 1000,
+			  nSeconds	: 5,
+			  benchFn	: benchDiv
+			},
+			{ nImages	: 5000,
+			  nSeconds	: 5,
+			  benchFn	: benchCanvas
+			},
+			{ nImages	: 5000,
+			  nSeconds	: 5,
+			  benchFn	: benchCanvas
+			},
+			{ nImages	: 5000,
+			  nSeconds	: 5,
+			  benchFn	: benchCanvas
+			},
+		];
+		var results	= [];
+
+		var flow	= Flow();
+		params.forEach(function(item, benchIdx){
+			var nImages	= item.nImages;
+			var nSeconds	= item.nSeconds;
+			flow.seq(function(next){
+				item.benchFn(nImages, nSeconds,function(imagesRate, nFrame, nImages){
+					console.log("Results: imageRate", imagesRate, imagesRate/30)
+					results[benchIdx]	= {
+						imageRate	: imagesRate
+					};
+					next();
+				});
+			});			
+		});
+		flow.seq(function(){
+			var graphDiv	= document.createElement("div");  
+			graphDiv.style.width	= 640;
+			graphDiv.style.height	= 300;
+			document.body.appendChild(graphDiv);
+
+			// build the points to draw
+			var points	= [];
+			results.forEach(function(result, idx){
+				points.push([idx, result.imageRate/30]);
+			});
+			jQuery.plot(graphDiv, [{
+				label	: "Canvas",
+				bars	: { show: true },
+				data	: points
+			}]);
+		});
+	</script>
+</body>
