@@ -1,0 +1,24 @@
+<!DOCTYPE HTML>
+<html>
+	<title>Flot Examples</title>
+	<head>
+		<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../vendor/excanvas.min.js"></script><![endif]-->
+		<script language="javascript" type="text/javascript" src="../vendor/jquery.js"></script>
+		<script language="javascript" type="text/javascript" src="../vendor/jquery.flot.js"></script>
+	</head>
+	<body>
+		<h1>Flot Examples</h1>
+
+		<div id="placeholder" style="width:600px;height:300px;"></div>
+
+		<script type="text/javascript">
+		jQuery(function () {
+			var d1 = [];
+			for (var i = 0; i < 14; i += 0.5){
+				d1.push([i, Math.sin(i)]);
+			}
+			var element	= jQuery("#placeholder");
+			jQuery.plot($("#placeholder"), [ d1 ]);});
+		</script>
+	</body>
+</html>

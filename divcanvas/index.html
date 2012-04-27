@@ -1,6 +1,7 @@
 <body>
 	<script src="vendor/requestanimationframe.js"></script>
 	<script src="vendor/Stats.js"></script>
+	<script src="../vendor/gowiththeflow.js"></script>
 	<script>
 		function bench(nImages, nSeconds, callback){
 			var canvas = document.createElement("canvas");  
@@ -28,10 +29,11 @@
 			function anim(){
 				var deltaSeconds= (Date.now() - timeStart)/1000
 				if( deltaSeconds > nSeconds && timeStart ){
-					console.log("nFrame", nFrame);
-					console.log("nImages", nImages);
-					console.log("deltaSeconds", deltaSeconds);
+					//console.log("nFrame", nFrame);
+					//console.log("nImages", nImages);
+					//console.log("deltaSeconds", deltaSeconds);
 					var imageSecond	= (nFrame*nImages)/deltaSeconds;
+					canvas.parentNode.removeChild(canvas);
 					callback && callback(imageSecond, nFrame, nImages);
 					return;
 				}
@@ -51,8 +53,30 @@
 				nFrame++;
 			}			
 		}
-		bench(3000,5,function(imagesSeconds, nFrame, nImages){
-			console.log(imagesSeconds, imagesSeconds/30)
-		});
+
+		var params	= [
+			{ nImages	: 3000,
+			  nSeconds	: 10,
+			},
+			{ nImages	: 3000,
+			  nSeconds	: 10,
+			},
+			{ nImages	: 3000,
+			  nSeconds	: 10,
+			},
+		];
+
+		var flow	= Flow();
+		params.forEach(function(item){
+			var nImages	= item.nImages;
+			var nSeconds	= item.nSeconds;
+			flow.seq(function(next){
+				bench(nImages, nSeconds,function(imagesSeconds, nFrame, nImages){
+					console.log("***** Results")
+					console.log("imageSeconds", imagesSeconds, imagesSeconds/30)
+					next();
+				});
+			});
+		});		
 	</script>
 </body>
