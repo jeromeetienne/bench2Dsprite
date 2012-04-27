@@ -40,8 +40,8 @@ function benchDiv(nImages, nSeconds, callback){
 		for(var i = 0; i < nImages; i++){
 			var image	= images[i];
 			if(!image)	return;
-			image.style.top	= Math.floor(speed+i)	% 500;
 			image.style.left= Math.floor(speed+i)*3	% 900;
+			image.style.top	= Math.floor(speed+i)	% 500;
 		}
 		nFrame++;
 	}			

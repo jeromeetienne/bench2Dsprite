@@ -9,8 +9,8 @@
 	<script>
 		function benchCanvas(nImages, nSeconds, callback){
 			var canvas = document.createElement("canvas");  
-			canvas.width	= 640;
-			canvas.height	= 480;
+			canvas.width	= 900;
+			canvas.height	= 500;
 			document.body.appendChild(canvas);
 
 			var ctx		= canvas.getContext("2d");
@@ -50,57 +50,16 @@
 				
 				var speed	= Date.now()/10;
 				for(var i = 0; i < nImages; i++){
-					var x	= Math.floor(speed+i)	% 640;
-					var y	= Math.floor(speed+i)*3	% 480;
+					var x	= Math.floor(speed+i)*3	% 900;
+					var y	= Math.floor(speed+i)	% 500;
 					ctx.drawImage(image, x, y)
 				}
 				nFrame++;
 			}			
 		}
 
-		var params	= [
-			{ nImages	: 5000,
-			  nSeconds	: 5,
-			},
-			{ nImages	: 5000,
-			  nSeconds	: 5,
-			},
-			{ nImages	: 5000,
-			  nSeconds	: 5,
-			},
-		];
-		var results	= [];
-
-		var flow	= Flow();
-		params.forEach(function(item, benchIdx){
-			var nImages	= item.nImages;
-			var nSeconds	= item.nSeconds;
-			flow.seq(function(next){
-				benchCanvas(nImages, nSeconds,function(imagesRate, nFrame, nImages){
-					console.log("Results: imageRate", imagesRate, imagesRate/30)
-					results[benchIdx]	= {
-						imageRate	: imagesRate
-					};
-					next();
-				});
-			});			
-		});
-		flow.seq(function(){
-			var graphDiv	= document.createElement("div");  
-			graphDiv.style.width	= 640;
-			graphDiv.style.height	= 300;
-			document.body.appendChild(graphDiv);
-
-			// build the points to draw
-			var points	= [];
-			results.forEach(function(result, idx){
-				points.push([idx, result.imageRate/30]);
-			});
-			jQuery.plot(graphDiv, [{
-				label	: "Canvas",
-				bars	: { show: true },
-				data	: points
-			}]);
+		benchCanvas(5000, 5,function(imagesRate, nFrame, nImages){
+			console.log("Results: imageRate", imagesRate, imagesRate/30)
 		});
 	</script>
 </body>

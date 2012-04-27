@@ -1,7 +1,7 @@
 function benchCanvas(nImages, nSeconds, callback){
 	var canvas = document.createElement("canvas");  
-	canvas.width	= 640;
-	canvas.height	= 480;
+	canvas.width	= 900;
+	canvas.height	= 500;
 	document.body.appendChild(canvas);
 
 	var ctx		= canvas.getContext("2d");
@@ -35,16 +35,21 @@ function benchCanvas(nImages, nSeconds, callback){
 
 		requestAnimationFrame(anim);
 
+		draw(nImages);
+	
+		nFrame++;
+	}
+	
+	function draw(nImages){
 		ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 		var width	= ctx.canvas.width;
 		var height	= ctx.canvas.height;
 		
 		var speed	= Date.now()/10;
 		for(var i = 0; i < nImages; i++){
-			var x	= Math.floor(speed+i)	% 640;
-			var y	= Math.floor(speed+i)*3	% 480;
+			var x	= Math.floor(speed+i)*3	% 900;
+			var y	= Math.floor(speed+i)	% 500;
 			ctx.drawImage(image, x, y)
 		}
-		nFrame++;
-	}			
+	}
 }
