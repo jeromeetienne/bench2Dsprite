@@ -9,7 +9,7 @@ function createCanvas(width, height){
 function loadImage(url, callback){
 	var image	= new Image();
 	image.onload	= function(){
-		callback && callback();
+		callback && callback(image);
 	};
 	image.crossOrigin= '';
 	image.src	= url;

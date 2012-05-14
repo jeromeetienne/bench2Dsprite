@@ -1,22 +1,15 @@
 <body>
-	<script src="vendor/requestanimationframe.js"></script>
-	<script src="vendor/Stats.js"></script>
+	<script src="../vendor/requestanimationframe.js"></script>
+	<script src="../vendor/Stats.js"></script>
+	<script src="../assets/js/utils.js"></script>
 	<script>
 		function bench(nImages, nSeconds, callback){
-			var generateSprite	= function(callback){
-				var image	= new Image();
-				image.onload	= function(){
+			var images	= [];
+			var url		= "../assets/images/logo128.png";
+			for(var i = 0; i < nImages; i++){
+				loadImage(url, function(image){
 					image.style.position	= "absolute";
 					document.body.appendChild(image);
-					callback && callback(image);
-				};
-				image.crossOrigin= '';
-				image.src	= "logo128.png";			
-			};
-	
-			var images	= [];
-			for(var i = 0; i < nImages; i++){
-				generateSprite(function(image){
 					images.push(image);
 				});
 			};

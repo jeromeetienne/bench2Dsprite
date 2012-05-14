@@ -3,60 +3,79 @@
 	<script src="../vendor/Stats.js"></script>
 	<script src="../vendor/gowiththeflow.js"></script>
 
+	<script src="../assets/js/utils.js"></script>
+
 	<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../vendor/excanvas.min.js"></script><![endif]-->
 	<script language="javascript" type="text/javascript" src="../vendor/jquery.js"></script>
 	<script language="javascript" type="text/javascript" src="../vendor/jquery.flot.js"></script>
 	<script>
-		function benchCanvas(nImages, nSeconds, callback){
-			var canvas = document.createElement("canvas");  
-			canvas.width	= 900;
-			canvas.height	= 500;
-			document.body.appendChild(canvas);
-
-			var ctx		= canvas.getContext("2d");
-			
-			var image	= new Image();
-			image.onload	= function(){
-				start();
-			};
-			image.crossOrigin= '';
-			image.src	= "../assets/images/logo128.png";			
-	
-
-			var timeStart, nFrame;
-
-			function start(){
-				timeStart	= Date.now();
-				nFrame		= 0;
-				requestAnimationFrame(anim);
-			}
-			function anim(){
-				var deltaSeconds= (Date.now() - timeStart)/1000
-				if( deltaSeconds > nSeconds && timeStart ){
-					var imagesRate	= (nFrame*nImages)/deltaSeconds;
-					canvas.parentNode.removeChild(canvas);
-					callback && callback(imagesRate, nFrame, nImages);
-					return;
-				}
-
-				requestAnimationFrame(anim);
-
-				ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-				var width	= ctx.canvas.width;
-				var height	= ctx.canvas.height;
+		function benchCanvas(callback){
+			function benchOneCanvas(nImages, nSeconds, callback){
+				var canvas	= createCanvas(1100, 400);
+				document.body.appendChild(canvas);
+				var ctx		= canvas.getContext("2d");
+				var url		= "../assets/images/logo128.png";			
+				var image	= loadImage(url, function(image){
+					start();
+				});
+				var spriteW	= 128;
+				var spriteH	= 128;
 				
-				var speed	= Date.now()/10;
-				for(var i = 0; i < nImages; i++){
-					var x	= Math.floor(speed+i)*3	% 900;
-					var y	= Math.floor(speed+i)	% 500;
-					ctx.drawImage(image, x, y)
+				var timeStart, nFrame;
+	
+				function start(){
+					timeStart	= Date.now();
+					nFrame		= 0;
+					requestAnimationFrame(anim);
 				}
-				nFrame++;
-			}			
+				function anim(){
+					var deltaSeconds= (Date.now() - timeStart)/1000
+					if( deltaSeconds > nSeconds && timeStart ){
+						var imagesRate	= (nFrame*nImages)/deltaSeconds;
+						canvas.parentNode.removeChild(canvas);
+						callback && callback(imagesRate, nFrame, nImages);
+						return;
+					}
+	
+					requestAnimationFrame(anim);
+	
+					ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+					var width	= ctx.canvas.width - spriteW;
+					var height	= ctx.canvas.height - spriteH;
+					
+					var speed	= Date.now()/10;
+					for(var i = 0; i < nImages; i++){
+						var x	= Math.floor(speed+i)*3	% width;
+						var y	= Math.floor(speed+i)	% height;
+						ctx.drawImage(image, x, y)
+					}
+					nFrame++;
+				}			
+			}
+	
+			var flow	= Flow();
+			var delay	= 5;
+			var results	= [];
+			var imgPerFrame	= [500, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 6000];
+			var imgPerFrame	= [4000, 5000, 6000];
+			imgPerFrame.forEach(function(nImages){
+				flow.seq(function(next){
+					benchOneCanvas(nImages, delay,function(imagesRate, nFrame, nImages){
+						console.log("Results: imageRate", imagesRate, imagesRate/30, nImages)
+						results.push({
+							nImages		: nImages,
+							imagesRate	: imagesRate	
+						});
+						next();
+					});				
+				});
+			});
+			flow.seq(function(){
+				callback(results)
+			})
 		}
-
-		benchCanvas(6000, 5,function(imagesRate, nFrame, nImages){
-			console.log("Results: imageRate", imagesRate, imagesRate/30)
+		benchCanvas(function(results){
+			console.log(results);
 		});
 	</script>
 </body>
