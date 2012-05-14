@@ -1,0 +1,26 @@
+<body>
+	<script>
+		var generateSprite	= function(callback){
+			var image	= new Image();
+			image.onload	= function(){
+				image.style.position	= "absolute";
+				document.body.appendChild(image);
+				callback && callback(image);
+			};
+			image.crossOrigin= '';
+			image.src	= "logo128.png";			
+		};
+	
+		var images	= [];
+		for(var i = 0; i < 300; i++){
+			generateSprite(function(image){
+				images.push(image);
+			});
+		};
+
+
+		while(true){
+			
+		}
+	</script>
+</body>

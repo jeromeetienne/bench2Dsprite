@@ -36,7 +36,7 @@ function benchCanvas(nImages, nSeconds, callback){
 		requestAnimationFrame(anim);
 
 		draw(nImages);
-	
+
 		nFrame++;
 	}
 	
@@ -47,7 +47,7 @@ function benchCanvas(nImages, nSeconds, callback){
 		
 		var speed	= Date.now()/10;
 		for(var i = 0; i < nImages; i++){
-			var x	= Math.floor(speed+i)*3	% 900;
+			var x	= Math.floor(speed+i)*2	% 900;
 			var y	= Math.floor(speed+i)	% 500;
 			ctx.drawImage(image, x, y)
 		}

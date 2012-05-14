@@ -1,6 +1,6 @@
 <body>
-	<script src="vendor/requestanimationframe.js"></script>
-	<script src="vendor/Stats.js"></script>
+	<script src="../vendor/requestanimationframe.js"></script>
+	<script src="../vendor/Stats.js"></script>
 	<script src="../vendor/gowiththeflow.js"></script>
 
 	<!--[if lte IE 8]><script language="javascript" type="text/javascript" src="../vendor/excanvas.min.js"></script><![endif]-->
@@ -20,7 +20,7 @@
 				start();
 			};
 			image.crossOrigin= '';
-			image.src	= "logo128.png";			
+			image.src	= "../assets/images/logo128.png";			
 	
 
 			var timeStart, nFrame;
@@ -33,9 +33,6 @@
 			function anim(){
 				var deltaSeconds= (Date.now() - timeStart)/1000
 				if( deltaSeconds > nSeconds && timeStart ){
-					//console.log("nFrame", nFrame);
-					//console.log("nImages", nImages);
-					//console.log("deltaSeconds", deltaSeconds);
 					var imagesRate	= (nFrame*nImages)/deltaSeconds;
 					canvas.parentNode.removeChild(canvas);
 					callback && callback(imagesRate, nFrame, nImages);
@@ -58,7 +55,7 @@
 			}			
 		}
 
-		benchCanvas(5000, 5,function(imagesRate, nFrame, nImages){
+		benchCanvas(6000, 5,function(imagesRate, nFrame, nImages){
 			console.log("Results: imageRate", imagesRate, imagesRate/30)
 		});
 	</script>
