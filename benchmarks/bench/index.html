@@ -59,8 +59,8 @@
 
 			// build the points to draw
 			var points	= [];
-			results.forEach(function(result, idx){
-				points.push([idx, result.imageRate/30]);
+			results.forEach(function(result){
+				points.push([result.nImages, result.imagesRate]);
 			});
 			jQuery.plot(graphDiv, [{
 				label	: "Canvas",

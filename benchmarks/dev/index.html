@@ -9,47 +9,61 @@
 	<script src="../vendor/jquery.flot.js"></script>
 
 	<script src="../assets/js/utils.js"></script>
-	<script src="./benchcanvas.js"></script>
+	<link	href="../assets/css/utils.css" rel="stylesheet"></link>
+
+	<script src="./bench-canvas.js"></script>
+	<script src="./bench-div.js"></script>
 
 	<script>
-		function benchCanvas(nImages, nSeconds, callback){
-			var timeStart, nFrame;
-			var canvas	= createCanvas(900,400);
-			document.body.appendChild(canvas);
-			var ctx		= canvas.getContext("2d");
-			var image	= loadImage('../assets/images/logo128.png', function(){
-				timeStart	= Date.now();
-				nFrame		= 0;
-				setTimeout(anim, 0);
+		var graphDiv	= document.createElement("div");  
+		graphDiv.style.float	= "left";
+		graphDiv.style.width	= 320;
+		graphDiv.style.height	= 240;
+		document.body.appendChild(graphDiv);
+
+		var graphCanvas	= document.createElement("div");  
+		graphCanvas.style.float	= "left";
+		graphCanvas.style.width	= 320;
+		graphCanvas.style.height= 240;
+		document.body.appendChild(graphCanvas);
+
+
+		Flow().seq(function(next){
+			benchDiv(function(results){
+				console.log(results);
+				// build the points to draw
+				var points	= [];
+				var maxRate	= -Infinity;
+				results.forEach(function(result){
+					points.push([result.nImages, result.imagesRate/30]);
+					maxRate	= Math.max(result.imagesRate/30, maxRate);
+				});
+				jQuery.plot(graphDiv, [{
+					label	: "Div - max : "+Math.floor(maxRate),
+					bars	: { show: true },
+					data	: points
+				}]);
+				next();
 			});
-			function anim(){
-				var deltaSeconds= (Date.now() - timeStart)/1000
-				if( deltaSeconds > nSeconds && timeStart ){
-					var imagesRate	= (nFrame*nImages)/deltaSeconds;
-					canvas.parentNode && canvas.parentNode.removeChild(canvas);
-					callback && callback(imagesRate, nFrame, nImages);
-					return;
-				}
-
-				setTimeout(anim, 0);
-
-				ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-				var width	= ctx.canvas.width;
-				var height	= ctx.canvas.height;
+		}).seq(function(next){
+			benchCanvas(function(results){
+				console.log(results);
 				
-				var speed	= Math.floor(Date.now()/10);
-				var x 	= 900/2, y = 400/2;
-				for(var i = 0; i < nImages; i++){
-					var x	= Math.floor(speed+i)*3	% 900;
-					var y	= Math.floor(speed+i)	% 400;
-					ctx.drawImage(image, x, y)
-				}
-				nFrame++;
-			}			
-		}
+				// build the points to draw
+				var points	= [];
+				var maxRate	= -Infinity;
+				results.forEach(function(result){
+					points.push([result.nImages, result.imagesRate/30]);
+					maxRate	= Math.max(result.imagesRate/30, maxRate);
+				});
+				jQuery.plot(graphCanvas, [{
+					label	: "Canvas - max : "+Math.floor(maxRate),
+					bars	: { show: true },
+					data	: points
+				}]);
+				next();
+			});
+		})
 
-		benchCanvas(10000, 5,function(imagesRate, nFrame, nImages){
-			console.log("Results: imageRate", imagesRate, imagesRate/30)
-		});
 	</script>
 </body>

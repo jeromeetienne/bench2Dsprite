@@ -12,7 +12,7 @@
 		function benchCanvas(callback){
 			function benchOneCanvas(nImages, nSeconds, callback){
 				var canvas	= createCanvas(1100, 400);
-				document.body.appendChild(canvas);
+				//document.body.appendChild(canvas);
 				var ctx		= canvas.getContext("2d");
 				var url		= "../assets/images/logo128.png";			
 				var image	= loadImage(url, function(image){
@@ -64,7 +64,7 @@
 						console.log("Results: imageRate", imagesRate, imagesRate/30, nImages)
 						results.push({
 							nImages		: nImages,
-							imagesRate	: imagesRate	
+							imagesRate	: imagesRate/30	
 						});
 						next();
 					});				

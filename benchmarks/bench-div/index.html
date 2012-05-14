@@ -4,7 +4,7 @@
 	<script src="../assets/js/utils.js"></script>
 	<link	href="../assets/css/utils.css" rel="stylesheet"></link>
 	<script>
-		function bench(nImages, nSeconds, callback){
+		function benchOneDiv(nImages, nSeconds, callback){
 			var images	= [];
 			for(var i = 0; i < nImages; i++){
 				var element	= document.createElement('div');
@@ -39,7 +39,7 @@
 				nFrame++;
 			}			
 		}
-		bench(2000,5,function(imagesSeconds, nFrame, nImages){
+		benchOneDiv(2000,5,function(imagesSeconds, nFrame, nImages){
 			console.log(imagesSeconds, imagesSeconds/30)
 		});
 	</script>
