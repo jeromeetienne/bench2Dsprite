@@ -1,7 +1,7 @@
 function benchCanvas(callback){
 	function benchOneCanvas(nImages, nSeconds, callback){
 		var canvas	= createCanvas(800, 300);
-		//document.body.appendChild(canvas);
+		document.body.appendChild(canvas);
 		var ctx		= canvas.getContext("2d");
 		var url		= "../assets/images/logo128.png";			
 		var image	= loadImage(url, function(image){
@@ -28,14 +28,15 @@ function benchCanvas(callback){
 
 			setTimeout(anim, 0);
 
+			//canvas.width = canvas.width;
 			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 			var width	= ctx.canvas.width - spriteW;
 			var height	= ctx.canvas.height - spriteH;
 			
 			var speed	= Date.now()/10;
 			for(var i = 0; i < nImages; i++){
-				var x	= Math.floor(speed+i)*3	% width;
-				var y	= Math.floor(speed+i)	% height;
+				var x	= Math.floor(speed)*3	% width;
+				var y	= Math.floor(speed)	% height;
 				ctx.drawImage(image, x, y)
 			}
 			nFrame++;
