@@ -35,8 +35,8 @@ function benchCanvas(callback){
 			
 			var speed	= Date.now()/10;
 			for(var i = 0; i < nImages; i++){
-				var x	= Math.floor(speed)*3	% width;
-				var y	= Math.floor(speed)	% height;
+				var x	= Math.floor(speed+i)*3	% width;
+				var y	= Math.floor(speed+i)	% height;
 				ctx.drawImage(image, x, y)
 			}
 			nFrame++;
@@ -47,11 +47,11 @@ function benchCanvas(callback){
 	var delay	= 2;
 	var results	= [];
 	var imgPerFrame	= [500, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 6000];
-	//var imgPerFrame	= [500, 1000];
+	var imgPerFrame	= [500, 1000, 1500, 2000, 2500, 3000];
 	imgPerFrame.forEach(function(nImages){
 		flow.seq(function(next){
 			benchOneCanvas(nImages, delay,function(imagesRate, nFrame, nImages){
-				console.log("Results: imageRate", imagesRate, imagesRate/30, nImages)
+				console.log("Results: imageRate", imagesRate, imagesRate/30, nImages);
 				results.push({
 					nImages		: nImages,
 					imagesRate	: imagesRate	
@@ -62,5 +62,5 @@ function benchCanvas(callback){
 	});
 	flow.seq(function(){
 		callback(results)
-	})
+	});
 }
