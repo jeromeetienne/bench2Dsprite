@@ -4,7 +4,7 @@
 
 <script src="vendor/gowiththeflow.js"></script>
 
-<!--[if lte IE 8]><script src="vendor/excanvas.min.js"></script><![endif]-->	
+<script src="vendor/excanvas.min.js"></script>
 <script src="vendor/jquery.js"></script>
 <style>
 	-webkit-transform: translate3d(0, 0, 0);
@@ -15,7 +15,15 @@
 	function createCanvas(width, height){
 		width	= width	|| 900;
 		height	= height|| 400;
-		var canvas = document.createElement("canvas");  
+		var canvas = document.createElement("canvas");
+		console.log("canvas", canvas);
+		console.log("typeof G_vmlCanvasManager "+(typeof G_vmlCanvasManager))
+		// init excanvas if needed
+		if( typeof G_vmlCanvasManager !== "undefined" ){
+			console.log("initializing excanvas")
+			canvas = G_vmlCanvasManager.initElement(canvas);
+		}
+		console.log("canvas", canvas);
 		canvas.width	= width;
 		canvas.height	= height;
 		return canvas;
@@ -39,12 +47,12 @@
 			clearScreen	: true,
 			url		: "assets/images/logo128.png",
 			nSeconds	: 5,
-			imgPerFrame	: [500, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 6000]
-			//imgPerFrame	: [4000]
+			//imgPerFrame	: [500, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 6000]
+			imgPerFrame	: [600]
 		}, opts);
 		// to bench one bunch
 		function benchOne(nImages, nSeconds, callback){
-			var canvas	= createCanvas(window.innerWidth, window.innerHeight);
+			var canvas	= createCanvas(jQuery(window).width(), jQuery(window).height());
 			var ctx		= canvas.getContext("2d");
 			opts.attachDom	&& document.body.appendChild(canvas);
 
@@ -68,9 +76,9 @@
 
 				opts.clearScreen && ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-				var width	= ctx.canvas.width - image.width;
-				var height	= ctx.canvas.height - image.height;				
 				var speed	= Date.now()/10;
+				var width	= $(window).width()	- image.width;
+				var height	= $(window).height()	- image.height;
 				for(var i = 0; i < nImages; i++){
 					var x	= Math.floor(speed+i)*3	% width;
 					var y	= Math.floor(speed+i)	% height;
