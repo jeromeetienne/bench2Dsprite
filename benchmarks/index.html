@@ -5,8 +5,17 @@
 .legend	{
 	text-align	: center;
 }
+#info h1 {	
+	text-align	: center;
+}
 </style>
-<body><script>
+<body>
+<div id="info">
+	<h1>Benchmarks on displaying 2D Sprites</h1>
+	<strong>UserAgent :</strong><span class="useragent">(none)</span>
+</div>
+<hr/>
+<script>
 jQuery(function(){
 	// bind the 'message' event
 	window.addEventListener('message', function(event){
@@ -43,6 +52,7 @@ jQuery(function(){
 		}, 0);
 	}, false);
 	
+	jQuery('#info .useragent').text(navigator.userAgent);
 	var benchs	= [
 		{ name	: "moving divs",
 		  url	: 'benchDiv.html' },

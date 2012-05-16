@@ -1,6 +1,5 @@
 <body style="overflow: auto; margin: 0">
 <script src="vendor/gowiththeflow.js"></script>
-<script src="assets/js/utils.js"></script>
 <style>
 .sprite-logo128 {
 	background-image: url(assets/images/logo128.png);
@@ -18,6 +17,8 @@
 		// handle options
 		opts	= jQuery.extend({}, {
 			className	: "sprite-logo128",
+			imageW		: 128,
+			imageH		: 128,
 			nSeconds	: 5,
 			imgPerFrame	: [500, 800, 1300, 2000],
 		}, opts);
@@ -51,10 +52,12 @@
 				setTimeout(anim, 0);
 	
 				var speed	= Date.now()/10;
+				var width	= window.innerWidth	- opts.imageW;
+				var height	= window.innerHeight	- opts.imageH;
 				for(var i = 0; i < nImages; i++){
 					var image	= elements[i];
-					image.style.left= Math.floor(speed+i)*3	% 900;
-					image.style.top	= Math.floor(speed+i)	% 400;
+					image.style.left= Math.floor(speed+i)*3	% width;
+					image.style.top	= Math.floor(speed+i)	% height;
 				}
 				nFrame++;
 			}			
