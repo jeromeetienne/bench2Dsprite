@@ -1,6 +1,6 @@
 <!doctype html>
-<script src="../vendor/jquery.js"></script>
-<script src="../vendor/jquery.flot.js"></script>
+<script src="vendor/jquery.js"></script>
+<script src="vendor/jquery.flot.js"></script>
 <style>
 .legend	{
 	text-align	: center;
@@ -46,10 +46,10 @@ jQuery(function(){
 	var benchs	= [
 		{ name	: "moving divs",
 		  url	: 'benchDiv.html' },
-		//{ name	: "canvas not attached",
-		//  url	: 'benchCanvas.html#nSeconds=1&attachDom=false' },
-		//{ name	: "canvas with attachDom",
-		//  url	: 'benchCanvas.html#nSeconds=1' },
+		{ name	: "canvas not attached",
+		  url	: 'benchCanvas.html#nSeconds=1&attachDom=false' },
+		{ name	: "canvas with attachDom",
+		  url	: 'benchCanvas.html#nSeconds=1' },
 	];
 	var benchIdx	= 0;
 	launchBench(benchIdx);
