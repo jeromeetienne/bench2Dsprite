@@ -1,4 +1,5 @@
 <!doctype html>
+<script src="vendor/es5-shim.js"></script>
 <script src="vendor/jquery.js"></script>
 <script src="vendor/jquery.flot.js"></script>
 <style>
@@ -18,7 +19,8 @@
 <script>
 jQuery(function(){
 	// bind the 'message' event
-	window.addEventListener('message', function(event){
+	jQuery(window).bind('message', function(event){
+		event		= event.originalEvent;
 		var results	= event.data.results;		
 		var opts	= event.data.opts;
 
@@ -55,7 +57,7 @@ jQuery(function(){
 	jQuery('#info .useragent').text(navigator.userAgent);
 	var benchs	= [
 		{ name	: "moving divs",
-		  url	: 'benchDiv.html' },
+		  url	: 'benchDiv.html#nSeconds=1' },
 		{ name	: "canvas not attached",
 		  url	: 'benchCanvas.html#nSeconds=1&attachDom=false' },
 		{ name	: "canvas with attachDom",

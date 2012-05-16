@@ -1,4 +1,5 @@
 <body style="overflow: auto; margin: 0">
+<script src="vendor/es5-shim.js"></script>
 <script src="vendor/gowiththeflow.js"></script>
 <style>
 .sprite-logo128 {
@@ -20,7 +21,8 @@
 			imageW		: 128,
 			imageH		: 128,
 			nSeconds	: 5,
-			imgPerFrame	: [500, 800, 1300, 2000],
+			imgPerFrame	: [500, 800, 1300, 2000]
+			//imgPerFrame	: [800],
 		}, opts);
 		// to bench one bunch
 		function benchOne(nImages, nSeconds, callback){
