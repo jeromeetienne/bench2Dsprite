@@ -59,7 +59,9 @@ jQuery(function(){
 		{ name	: "canvas not attached",
 		  url	: 'benchCanvas.html#nSeconds=1&attachDom=false' },
 		{ name	: "canvas with attachDom",
-		  url	: 'benchCanvas.html#nSeconds=1' },
+		  url	: 'benchCanvas.html#nSeconds=5' },
+		{ name	: "canvas +attachDom -clearScreen",
+		  url	: 'benchCanvas.html#nSeconds=5&clearScreen=false' },
 	];
 	var benchIdx	= 0;
 	launchBench(benchIdx);

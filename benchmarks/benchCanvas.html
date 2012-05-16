@@ -28,6 +28,7 @@
 		// handle options
 		opts	= jQuery.extend({}, {
 			attachDom	: true,
+			clearScreen	: true,
 			url		: "assets/images/logo128.png",
 			nSeconds	: 5,
 			imgPerFrame	: [500, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 6000]
@@ -57,10 +58,10 @@
 
 				setTimeout(anim, 0);
 
-				ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+				opts.clearScreen && ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
 				var width	= ctx.canvas.width - image.width;
-				var height	= ctx.canvas.height - image.height;
-				
+				var height	= ctx.canvas.height - image.height;				
 				var speed	= Date.now()/10;
 				for(var i = 0; i < nImages; i++){
 					var x	= Math.floor(speed+i)*3	% width;
