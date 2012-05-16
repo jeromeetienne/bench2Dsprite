@@ -1,0 +1,74 @@
+<!doctype html>
+<script src="../vendor/jquery.js"></script>
+<script src="../vendor/jquery.flot.js"></script>
+<style>
+.legend	{
+	text-align	: center;
+}
+</style>
+<body><script>
+jQuery(function(){
+	// bind the 'message' event
+	window.addEventListener('message', function(event){
+		var results	= event.data.results;		
+		var opts	= event.data.opts;
+
+		var benchName	= jQuery('#bench-'+benchIdx).attr('data-name');
+
+		// destroy this bench
+		destroyBench(benchIdx);
+
+		// build the points to draw
+		var points	= [];
+		var maxRate	= -Infinity;
+		results.forEach(function(result){
+			points.push([result.nImages, result.imagesRate]);
+			maxRate	= Math.max(result.imagesRate, maxRate);
+		});
+		var legend	= "<b>" + benchName + "</b> - max : "+Math.floor(maxRate) + "<br/>opts : "+JSON.stringify(opts);
+		// create the domElement
+		var container		= jQuery('<div>').css('width', '320px').css('float', 'left').appendTo('body');
+		var plotContainer	= jQuery('<div>').css('width', '100%').css('height', '240px').appendTo(container);
+		jQuery('<div>').addClass('legend').html(legend).appendTo(container)
+
+		// draw the graph
+		jQuery.plot(plotContainer, [{
+			bars	: { show: true },
+			data	: points
+		}]);
+
+		setTimeout(function(){
+			benchIdx++;
+			launchBench(benchIdx);
+		}, 0);
+	}, false);
+	
+	var benchs	= [
+		{ name	: "moving divs",
+		  url	: 'benchDiv.html' },
+		//{ name	: "canvas not attached",
+		//  url	: 'benchCanvas.html#nSeconds=1&attachDom=false' },
+		//{ name	: "canvas with attachDom",
+		//  url	: 'benchCanvas.html#nSeconds=1' },
+	];
+	var benchIdx	= 0;
+	launchBench(benchIdx);
+	
+	function destroyBench(idx){
+		jQuery('#bench-'+idx).remove();
+	}
+	function launchBench(idx){
+		var bench	= benchs[idx];
+		if( !bench )	return;
+		// create the iframe
+		jQuery('<iframe>').attr('id', 'bench-'+idx)
+		.attr('data-name', bench.name)
+		.attr({
+			src	: bench.url,
+			width	: 768,
+			height	: 360
+		}).appendTo('body');
+	}
+	
+});
+</script></body>

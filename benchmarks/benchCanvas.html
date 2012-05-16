@@ -1,0 +1,104 @@
+<body style="overflow: auto; margin: 0">
+<script src="../vendor/gowiththeflow.js"></script>
+<script src="../assets/js/utils.js"></script>
+
+<!--[if lte IE 8]><script src="../vendor/excanvas.min.js"></script><![endif]-->	
+<script src="../vendor/jquery.js"></script>
+<script>
+	//////////////////////////////////////////////////////////////////
+	//								//
+	//////////////////////////////////////////////////////////////////
+	function benchAll(callback, opts){
+		// handle options
+		opts	= jQuery.extend({}, {
+			attachDom	: true,
+			url		: "../assets/images/logo128.png",
+			nSeconds	: 5,
+			imgPerFrame	: [500, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 6000]
+			//imgPerFrame	: [4000]
+		}, opts);
+		// to bench one bunch
+		function benchOne(nImages, nSeconds, callback){
+			var canvas	= createCanvas(window.innerWidth, window.innerHeight);
+			var ctx		= canvas.getContext("2d");
+			opts.attachDom	&& document.body.appendChild(canvas);
+
+			var timeStart;
+			var nFrame	= 0;
+			var image	= loadImage(opts.url, function(image){
+				timeStart	= Date.now();
+				setTimeout(anim, 0);
+			});
+			
+			function anim(){
+				var deltaSeconds= (Date.now() - timeStart)/1000
+				if( deltaSeconds > nSeconds && timeStart ){
+					var imagesRate	= (nFrame*nImages)/deltaSeconds;
+					canvas.parentNode && canvas.parentNode.removeChild(canvas);
+					callback && callback(imagesRate, nFrame, nImages);
+					return;
+				}
+
+				setTimeout(anim, 0);
+
+				ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+				var width	= ctx.canvas.width - image.width;
+				var height	= ctx.canvas.height - image.height;
+				
+				var speed	= Date.now()/10;
+				for(var i = 0; i < nImages; i++){
+					var x	= Math.floor(speed+i)*3	% width;
+					var y	= Math.floor(speed+i)	% height;
+					ctx.drawImage(image, x, y)
+				}
+				nFrame++;
+			}			
+		}
+		// use gowiththeflow.js to schedule each bunch of measure
+		var flow	= Flow();
+		var results	= [];
+		opts.imgPerFrame.forEach(function(nImages){
+			flow.seq(function(next){
+				benchOne(nImages, opts.nSeconds,function(imagesRate, nFrame, nImages){
+					console.log("Results: imageRate", imagesRate, imagesRate/30, nImages)
+					results.push({
+						nImages		: nImages,
+						imagesRate	: imagesRate/30	
+					});
+					next();
+				});				
+			});
+		});
+		flow.seq(function(){
+			callback(results)
+		})
+		
+	}
+	
+	//////////////////////////////////////////////////////////////////
+	//		Main Program					//
+	//////////////////////////////////////////////////////////////////
+	
+	// get opts from window.location.hash
+	var opts	= (function(){
+		if( !window.location.hash )	return {};	// if no hash, return now
+		var results	= {};
+		var hashes	= window.location.hash.slice(1).split('&');
+		for(var i = 0; i < hashes.length; i++){
+			var hash	= hashes[i].split('=');
+			if( hash[1].toLowerCase() === "false" )		hash[1]	= false;
+			else if( hash[1].toLowerCase() === "true" )	hash[1]	= true;
+			else if( parseInt(hash[1]) !== NaN )		hash[1]	= parseInt(hash[1]);
+			results[hash[0]]	= hash[1];
+		}
+		return results;
+	})();
+	// launch the bencher
+	benchAll(function(results){
+		console.log(results);
+		window.parent && window.parent.postMessage({
+			results	: results,
+			opts	: opts
+		}, '*')
+	}, opts);
+</script></body>
