@@ -1,5 +1,7 @@
 <body style="overflow: auto; margin: 0">
 <script src="vendor/es5-shim.js"></script>
+<script src="vendor/firebugx.js"></script>
+
 <script src="vendor/gowiththeflow.js"></script>
 <style>
 .sprite-logo128 {
@@ -22,14 +24,14 @@
 			imageH		: 128,
 			nSeconds	: 5,
 			imgPerFrame	: [500, 800, 1300, 2000]
-			//imgPerFrame	: [800],
+			//imgPerFrame	: [800]
 		}, opts);
 		// to bench one bunch
 		function benchOne(nImages, nSeconds, callback){
 			var elements	= [];
 			for(var i = 0; i < nImages; i++){
 				var element	= document.createElement('div');
-				element.classList.add(opts.className);
+				jQuery(element).addClass(opts.className);
 				document.body.appendChild(element);
 				elements.push(element);
 			}
@@ -57,9 +59,9 @@
 				var width	= window.innerWidth	- opts.imageW;
 				var height	= window.innerHeight	- opts.imageH;
 				for(var i = 0; i < nImages; i++){
-					var image	= elements[i];
-					image.style.left= Math.floor(speed+i)*3	% width;
-					image.style.top	= Math.floor(speed+i)	% height;
+					var element	= elements[i];
+					element.style.left	= (Math.floor(speed+i)*3% width)+'px';
+					element.style.top	= (Math.floor(speed+i)	% height)+'px';
 				}
 				nFrame++;
 			}			
