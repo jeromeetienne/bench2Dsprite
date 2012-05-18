@@ -7,15 +7,27 @@
 <script src="vendor/excanvas.min.js"></script>
 <script src="vendor/jquery.js"></script>
 <style>
+body {
 	-webkit-transform: translate3d(0, 0, 0);
 	-moz-transform: translate3d(0, 0, 0);
-	transform: translate3d(0, 0, 0);
+	transform: translate3d(0, 0, 0);	
+}
+table {
+	border	: 1px solid black;
+}
+td {
+	border	: 1px solid black;
+}
 </style>
 <script>
 	function createCanvas(width, height){
 		width	= width	|| 900;
 		height	= height|| 400;
 		var canvas = document.createElement("canvas");
+		canvas.width	= width;
+		canvas.height	= height;
+		canvas.setAttribute("width"	, width);
+		canvas.setAttribute("height"	, height);
 		console.log("canvas", canvas);
 		console.log("typeof G_vmlCanvasManager "+(typeof G_vmlCanvasManager))
 		// init excanvas if needed
@@ -24,8 +36,6 @@
 			canvas = G_vmlCanvasManager.initElement(canvas);
 		}
 		console.log("canvas", canvas);
-		canvas.width	= width;
-		canvas.height	= height;
 		return canvas;
 	}
 	function loadImage(url, callback){
@@ -47,8 +57,8 @@
 			clearScreen	: true,
 			url		: "assets/images/logo128.png",
 			nSeconds	: 5,
-			//imgPerFrame	: [500, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 6000]
-			imgPerFrame	: [600]
+			imgPerFrame	: [500, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 6000]
+			//imgPerFrame	: [600]
 		}, opts);
 		// to bench one bunch
 		function benchOne(nImages, nSeconds, callback){
@@ -129,9 +139,26 @@
 	// launch the bencher
 	benchAll(function(results){
 		console.log(results);
-		window.parent && window.parent.postMessage({
-			results	: results,
-			opts	: opts
-		}, '*')
+		var inIFrame	= window.parent !== window;
+		if( inIFrame ){
+			window.parent.postMessage({
+				results	: results,
+				opts	: opts
+			}, '*');
+		}
+		
+		if( !inIFrame ){
+			var table	= jQuery('<table>')
+			var tr		= jQuery('<tr>').appendTo(table);
+			jQuery('<th>').text('nImages').appendTo(tr)
+			jQuery('<th>').text('imagesRate').appendTo(tr)
+			results.forEach(function(result){
+				var tr	= jQuery('<tr>').appendTo(table);
+				jQuery('<td>').text(Math.round(result.nImages)).appendTo(tr)
+				jQuery('<td>').text(Math.round(result.imagesRate)).appendTo(tr)
+			});
+			table.appendTo('body');
+			jQuery('<pre>').text('opts: '+JSON.stringify(opts)).appendTo('body')
+		}
 	}, opts);
 </script></body>

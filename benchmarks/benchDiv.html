@@ -10,6 +10,12 @@
 	height		: 128px;
 	width		: 128px;		
 };
+table {
+	border	: 1px solid black;
+}
+td {
+	border	: 1px solid black;
+}
 </style>
 <script src="vendor/jquery.js"></script>
 <script>
@@ -24,6 +30,7 @@
 			imageH		: 128,
 			nSeconds	: 5,
 			imgPerFrame	: [500, 800, 1300, 2000]
+			//nSeconds	: 1,
 			//imgPerFrame	: [800]
 		}, opts);
 		// to bench one bunch
@@ -108,9 +115,26 @@
 	// launch the bencher
 	benchAll(function(results){
 		console.log(results);
-		window.parent && window.parent.postMessage({
-			results	: results,
-			opts	: opts
-		}, '*')
+		var inIFrame	= window.parent !== window;
+		if( inIFrame ){
+			window.parent.postMessage({
+				results	: results,
+				opts	: opts
+			}, '*');
+		}
+		
+		if( !inIFrame ){
+			var table	= jQuery('<table>')
+			var tr		= jQuery('<tr>').appendTo(table);
+			jQuery('<th>').text('nImages').appendTo(tr)
+			jQuery('<th>').text('imagesRate').appendTo(tr)
+			results.forEach(function(result){
+				var tr	= jQuery('<tr>').appendTo(table);
+				jQuery('<td>').text(Math.round(result.nImages)).appendTo(tr)
+				jQuery('<td>').text(Math.round(result.imagesRate)).appendTo(tr)
+			});
+			table.appendTo('body');
+			jQuery('<pre>').text('opts: '+JSON.stringify(opts)).appendTo('body')
+		}
 	}, opts);
 </script></body>
