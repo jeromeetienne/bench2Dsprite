@@ -1,0 +1,181 @@
+<!--[if IE 9]><!DOCTYPE HTML><![endif]-->
+
+<body style="overflow: auto; margin: 0">
+<script src="vendor/es5-shim.js"></script>
+<script src="vendor/firebugx.js"></script>
+
+<script src="vendor/gowiththeflow.js"></script>
+
+<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="vendor/excanvas.min.js"></script><![endif]-->
+<script src="vendor/jquery.js"></script>
+<style>
+body {
+	-webkit-transform: translate3d(0, 0, 0);
+	-moz-transform: translate3d(0, 0, 0);
+	transform: translate3d(0, 0, 0);	
+}
+table {
+	border	: 1px solid black;
+}
+td {
+	border	: 1px solid black;
+}
+</style>
+<script>
+	function createCanvas(width, height){
+		width	= width	|| 900;
+		height	= height|| 400;
+		var canvas = document.createElement("canvas");
+		canvas.width	= width;
+		canvas.height	= height;
+		canvas.setAttribute("width"	, width);
+		canvas.setAttribute("height"	, height);
+		console.log("canvas", canvas);
+		console.log("typeof G_vmlCanvasManager "+(typeof G_vmlCanvasManager))
+		// init excanvas if needed
+		if( typeof G_vmlCanvasManager !== "undefined" ){
+			console.log("initializing excanvas")
+			canvas = G_vmlCanvasManager.initElement(canvas);
+		}
+		console.log("canvas", canvas);
+		return canvas;
+	}
+	function loadImage(url, callback){
+		var image	= new Image();
+		image.onload	= function(){
+			callback && callback(image);
+		};
+		//image.crossOrigin= '';
+		image.src	= url;
+		return image
+	}
+	//////////////////////////////////////////////////////////////////
+	//								//
+	//////////////////////////////////////////////////////////////////
+	function benchAll(callback, opts){
+		// handle options
+		opts	= jQuery.extend({}, {
+			attachDom	: true,
+			clearScreen	: true,
+			url		: "assets/images/logo128.png",
+			url1		: "assets/images/logo64.png",
+			url2		: "assets/images/logo48.png",
+			url3		: "assets/images/logo32.png",
+			url4		: "assets/images/logo10.png",
+			nSeconds	: 5,
+			imgPerFrame	: [500, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 6000]
+			//imgPerFrame	: [50]
+		}, opts);
+		// to bench one bunch
+		function benchOne(nImages, nSeconds, callback){
+			var canvas	= createCanvas(jQuery(window).width(), jQuery(window).height());
+			var ctx		= canvas.getContext("2d");
+			opts.attachDom && document.body.appendChild(canvas);
+
+			var timeStart;
+			var nFrame	= 0;
+			var image	= loadImage(opts.url);
+			var image1	= loadImage(opts.url1);
+			var image2	= loadImage(opts.url2);
+			var image3	= loadImage(opts.url3);
+			var image4	= loadImage(opts.url4);
+			
+			timeStart	= Date.now();
+			setTimeout(anim, 0);
+			
+			function anim(){
+				var deltaSeconds= (Date.now() - timeStart)/1000
+				if( deltaSeconds > nSeconds && timeStart ){
+					var imagesRate	= (nFrame*nImages)/deltaSeconds;
+					canvas.parentNode && canvas.parentNode.removeChild(canvas);
+					callback && callback(imagesRate, nFrame, nImages);
+					return;
+				}
+
+				setTimeout(anim, 0);
+
+				opts.clearScreen && ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+				var speed	= Date.now()/10;
+				var width	= $(window).width()	- image.width;
+				var height	= $(window).height()	- image.height;
+				for(var i = 0; i < nImages; i++){
+					var x	= Math.floor(speed+i)*3	% width;
+					var y	= Math.floor(speed+i)	% height;
+					switch (i % 5)
+					{
+						case 0 : ctx.drawImage(image, x, y); break;
+						case 1 : ctx.drawImage(image1, x, y); break;
+						case 2 : ctx.drawImage(image2, x, y); break;
+						case 3 : ctx.drawImage(image3, x, y); break;
+						case 4 : ctx.drawImage(image4, x, y); break;
+					}
+				}
+				nFrame++;
+			}			
+		}
+		// use gowiththeflow.js to schedule each bunch of measure
+		var flow	= Flow();
+		var results	= [];
+		opts.imgPerFrame.forEach(function(nImages){
+			flow.seq(function(next){
+				benchOne(nImages, opts.nSeconds,function(imagesRate, nFrame, nImages){
+					console.log("Results: imageRate ", imagesRate, " ", imagesRate/30, " ", nImages)
+					results.push({
+						nImages		: nImages,
+						imagesRate	: imagesRate/30	
+					});
+					next();
+				});				
+			});
+		});
+		flow.seq(function(){
+			callback(results)
+		})
+		
+	}
+	
+	//////////////////////////////////////////////////////////////////
+	//		Main Program					//
+	//////////////////////////////////////////////////////////////////
+	
+	// get opts from window.location.hash
+	var opts	= (function(){
+		if( !window.location.hash )	return {};	// if no hash, return now
+		var results	= {};
+		var hashes	= window.location.hash.slice(1).split('&');
+		for(var i = 0; i < hashes.length; i++){
+			var hash	= hashes[i].split('=');
+			if( hash[1].toLowerCase() === "false" )		hash[1]	= false;
+			else if( hash[1].toLowerCase() === "true" )	hash[1]	= true;
+			else if( parseInt(hash[1]) !== NaN )		hash[1]	= parseInt(hash[1]);
+			results[hash[0]]	= hash[1];
+		}
+		return results;
+	})();
+	// launch the bencher
+	benchAll(function(results){
+		console.log(results);
+		var inIFrame	= window.parent !== window;
+		/*if( inIFrame ){
+			window.parent.postMessage({
+				results	: results,
+				opts	: opts
+			}, '*');
+		}*/
+		
+		//if( !inIFrame ){
+			var table	= jQuery('<table>')
+			var tr		= jQuery('<tr>').appendTo(table);
+			jQuery('<th>').text('nImages').appendTo(tr)
+			jQuery('<th>').text('imagesRate').appendTo(tr)
+			results.forEach(function(result){
+				var tr	= jQuery('<tr>').appendTo(table);
+				jQuery('<td>').text(Math.round(result.nImages)).appendTo(tr)
+				jQuery('<td>').text(Math.round(result.imagesRate)).appendTo(tr)
+			});
+			table.appendTo('body');
+			//jQuery('<pre>').text('opts: '+JSON.stringify(opts)).appendTo('body')
+		//}
+	}, opts);
+</script></body>
